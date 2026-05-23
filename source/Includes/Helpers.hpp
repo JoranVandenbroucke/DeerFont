@@ -1,25 +1,24 @@
+#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_HELPERS_HPP
+#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_HELPERS_HPP
+
 //
 // Copyright (c) 2024.
 // Author: Joran.
 //
 
 #pragma once
-#include <bit>
-#include <cstdio>
-#include <ostream>
-#include <vector>
+import FawnAlgebra;
+import std;
+using namespace fawn_algebra;
 
-import FawnAlgebra.Arithmetics;
-using namespace FawnAlgebra;
+using shortFrac    = std::int16_t;
+using Fixed        = std::int32_t;
+using FWord        = std::int16_t;
+using uFWord       = std::uint16_t;
+using F2Dot14      = std::int16_t;
+using longDateTime = std::int64_t;
 
-using shortFrac    = int16;
-using Fixed        = int32;
-using FWord        = int16;
-using uFWord       = uint16;
-using F2Dot14      = int16;
-using longDateTime = int64;
-
-enum class error_code : uint8
+enum class error_code : std::uint8_t
 {
     no_error = 0,
     font_not_found,
@@ -32,14 +31,14 @@ enum class error_code : uint8
 };
 
 template <typename T, typename V>
-    requires(sizeof(T) <= sizeof(V)) and std::is_integral_v<T>
-auto ReadValue(FILE *const file, V &value)
+    requires((sizeof(T) <= sizeof(V)) && std::is_integral_v<T>)
+auto ReadValue(std::FILE* const file, V& value)
 {
-    if ( std::fread(&value, sizeof(T), 1, file) != 1 )
+    if (std::fread(&value, sizeof(T), 1, file) != 1)
     {
         return error_code::font_parsing_error;
     }
-    if constexpr ( std::endian::native == std::endian::little )
+    if constexpr (std::endian::native == std::endian::little)
     {
         value = std::byteswap(value);
     }
@@ -47,24 +46,26 @@ auto ReadValue(FILE *const file, V &value)
 }
 template <typename T>
     requires std::is_integral_v<T>
-auto ReadValue(FILE *const file, T &value)
+auto ReadValue(std::FILE* const file, T& value)
 {
     return ReadValue<T, T>(file, value);
 }
 template <typename T>
     requires std::is_integral_v<T>
-auto ReadValue(FILE *const file, std::vector<T> &values)
+auto ReadValue(std::FILE* const file, std::vector<T>& values)
 {
-    if ( std::fread(values.data(), sizeof(T), values.size(), file) != 1 )
+    if (std::fread(values.data(), sizeof(T), values.size(), file) != 1)
     {
         return error_code::font_parsing_error;
     }
-    if constexpr ( std::endian::native == std::endian::little )
+    if constexpr (std::endian::native == std::endian::little)
     {
-        for ( auto &value : values )
+        for (auto& value : values)
         {
             value = std::byteswap(value);
         }
     }
     return error_code::no_error;
 }
+
+#endif

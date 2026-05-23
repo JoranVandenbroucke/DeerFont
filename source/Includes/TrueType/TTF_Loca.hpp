@@ -1,3 +1,6 @@
+#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_LOCA_HPP
+#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_LOCA_HPP
+
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -6,23 +9,25 @@
 #pragma once
 #include "../Helpers.hpp"
 
-import FawnAlgebra.Arithmetics;
-using namespace FawnAlgebra;
+import FawnAlgebra;
+import std;
+using namespace fawn_algebra;
 
-inline auto ReadLoca(FILE *const file, const uint32 locaLocation, const uint32 nrOfGlyphs, const uint32 glyphTableLocation, const bool isShort, std::vector<uint32> &glyphLocations) noexcept
+inline auto ReadLoca(std::FILE* const pFile, const std::uint32_t locaLocation, const std::uint32_t nrOfGlyphs, const std::uint32_t glyphTableLocation, const bool isShort, std::vector<std::uint32_t>& glyphLocations) noexcept
 {
-    if ( fseek(file, locaLocation, SEEK_SET) != 0 )
+    // todo : 0 == SEEK_SET, make sure it's no longer hard coded
+    if (std::fseek(pFile, locaLocation, 0) != 0)
     {
         return error_code::font_parsing_error;
     }
     glyphLocations.resize(nrOfGlyphs);
-    for ( auto &glyphLocation : glyphLocations )
+    for (auto& glyphLocation : glyphLocations)
     {
         glyphLocation = glyphTableLocation;
-        if ( isShort )
+        if (isShort)
         {
-            uint16 offset;
-            if ( const error_code errorCode = ReadValue(file, offset); errorCode != error_code::no_error )
+            std::uint16_t offset;
+            if (const error_code errorCode = ReadValue(pFile, offset); errorCode != error_code::no_error)
             {
                 return errorCode;
             }
@@ -30,8 +35,8 @@ inline auto ReadLoca(FILE *const file, const uint32 locaLocation, const uint32 n
         }
         else
         {
-            uint32 offset;
-            if ( const error_code errorCode = ReadValue(file, offset); errorCode != error_code::no_error )
+            std::uint32_t offset;
+            if (const error_code errorCode = ReadValue(pFile, offset); errorCode != error_code::no_error)
             {
                 return errorCode;
             }
@@ -40,3 +45,5 @@ inline auto ReadLoca(FILE *const file, const uint32 locaLocation, const uint32 n
     }
     return error_code::no_error;
 }
+
+#endif

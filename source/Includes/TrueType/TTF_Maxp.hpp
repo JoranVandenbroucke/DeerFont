@@ -1,3 +1,6 @@
+#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_MAXP_HPP
+#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_MAXP_HPP
+
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -6,24 +9,28 @@
 #pragma once
 #include "../Helpers.hpp"
 
-import FawnAlgebra.Arithmetics;
-using namespace FawnAlgebra;
+import FawnAlgebra;
+import std;
+using namespace fawn_algebra;
 
 struct Maxp
 {
-    Fixed    version;   // 0x00005000 (0.5)
-    uint16 numGlyphs; // the number of glyphs in the font
+    Fixed version{};           // 0x00005000 (0.5)
+    std::uint16_t numGlyphs{}; // the number of glyphs in the font
 };
 
-inline auto ReadMaxp(FILE* const file, const uint32 mapxLocation, Maxp& maxp) noexcept
+inline auto ReadMaxp(std::FILE* const pFile, const std::uint32_t mapxLocation, Maxp& maxp) noexcept
 {
-    if(fseek(file, mapxLocation, SEEK_SET)!=0)
+    // todo : 0 == SEEK_SET, make sure it's no longer hard coded
+    if (std::fseek(pFile, mapxLocation, 0) != 0)
     {
         return error_code::font_parsing_error;
     }
-    if(ReadValue(file, maxp.version) != error_code::no_error || ReadValue(file, maxp.numGlyphs) != error_code::no_error)
+    if (ReadValue(pFile, maxp.version) != error_code::no_error || ReadValue(pFile, maxp.numGlyphs) != error_code::no_error)
     {
         return error_code::font_parsing_error;
     }
     return error_code::no_error;
 }
+
+#endif

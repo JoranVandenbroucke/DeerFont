@@ -1,6 +1,6 @@
 function(setup_fawnalgebra target_name)
     # Check if FawnAlgebra is already a target
-    if (NOT TARGET FawnAlgebra::FawnAlgebra)
+    if (NOT TARGET fawn_algebra::FawnAlgebra)
         # Try to find FawnAlgebra package
         find_package(FawnAlgebra QUIET PATHS "${CMAKE_SOURCE_DIR}/3rdParty/FawnAlgebra")
 
@@ -26,7 +26,7 @@ function(setup_fawnalgebra target_name)
     endif ()
 
     # Add FawnAlgebra as a dependency and link it to the target
-    add_dependencies(${target_name} FawnAlgebra::FawnAlgebra)
+    add_dependencies(${target_name} fawn_algebra::FawnAlgebra)
     target_include_directories(${target_name} PUBLIC ${FawnAlgebra_INCLUDE_DIRS})
-    target_link_libraries(${target_name} PUBLIC FawnAlgebra::FawnAlgebra)
+    target_link_libraries(${target_name} PUBLIC fawn_algebra::FawnAlgebra)
 endfunction()

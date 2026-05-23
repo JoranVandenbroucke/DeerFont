@@ -1,3 +1,6 @@
+#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_CMAP_HPP
+#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_CMAP_HPP
+
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -6,55 +9,54 @@
 #pragma once
 #include "../Helpers.hpp"
 
-#include <cstddef>
-
-import FawnAlgebra.Arithmetics;
-using namespace FawnAlgebra;
+import FawnAlgebra;
+import std;
+using namespace fawn_algebra;
 
 struct CMapIndex
 {
-    uint16 version;
-    uint16 numberSubTables;
+    std::uint16_t version{};
+    std::uint16_t numberSubTables{};
 };
 struct CMapSubTable
 {
-    uint16 platformId;
-    uint16 platformSpecificId;
-    uint32 offset;
+    std::uint16_t platformId{};
+    std::uint16_t platformSpecificId{};
+    std::uint32_t offset{};
 };
 struct Format4
 {
-    uint16                                   length;          // Length of subtable in bytes
-    uint16                                   language;        // Language code (see above)
-    uint16                                   segCountX2;      // 2 * segCount
-    uint16                                   searchRange;     // 2 * (2**FLOOR(log2(segCount)))
-    uint16                                   entrySelector;   // log2(searchRange/2)
-    uint16                                   rangeShift;      // (2 * segCount) - searchRange
-    std::vector<uint16>                      endCode;         // Ending character code for each segment, last = 0xFFFF.
-    uint16                                   reservedPad;     // This value should be zero
-    std::vector<uint16>                      startCode;       // Starting character code for each segment
-    std::vector<uint16>                      idDelta;         // Delta for all character codes in segment
-    std::vector<std::pair<uint32, uint16>> idRangeOffset;   // Offset in bytes to glyph indexArray, or 0
-    std::vector<uint16>                      glyphIndexArray; // Glyph index array
+    std::uint16_t length{};                                               // Length of subtable in bytes
+    std::uint16_t language{};                                             // Language code (see above)
+    std::uint16_t segCountX2{};                                           // 2 * segCount
+    std::uint16_t searchRange{};                                          // 2 * (2**FLOOR(log2(segCount)))
+    std::uint16_t entrySelector{};                                        // log2(searchRange/2)
+    std::uint16_t rangeShift{};                                           // (2 * segCount) - searchRange
+    std::vector<std::uint16_t> endCode{};                                 // Ending character code for each segment, last = 0xFFFF.
+    std::uint16_t reservedPad{};                                          // This value should be zero
+    std::vector<std::uint16_t> startCode{};                               // Starting character code for each segment
+    std::vector<std::uint16_t> idDelta{};                                 // Delta for all character codes in segment
+    std::vector<std::pair<std::uint32_t, std::uint16_t>> idRangeOffset{}; // Offset in bytes to glyph indexArray, or 0
+    std::vector<std::uint16_t> glyphIndexArray{};                         // Glyph index array
 };
 struct Format12
 {
-    uint16 reserved; // Set to 0.
-    uint32 length;   // Byte length of this subtable (including the header)
-    uint32 language; // Language code (see above)
-    uint32 nGroups;  // Number of groupings which follow
+    std::uint16_t reserved{};       // Set to 0.
+    std::uint32_t length{};         // Byte length of this subtable (including the header)
+    std::uint32_t language{};       // Language code (see above)
+    std::uint32_t numberOfGroups{}; // Number of groupings which follow
 };
-constexpr uint16 g_platformUnicode{ 0 };
-constexpr uint16 g_platformMacintosh{ 1 };
-constexpr uint16 g_platformMicrosoft{ 3 };
+constexpr std::uint16_t g_platformUnicode{0};
+constexpr std::uint16_t g_platformMacintosh{1};
+constexpr std::uint16_t g_platformMicrosoft{3};
 
-constexpr uint16 g_platformUnicode_version_1_0{ 0 };
-constexpr uint16 g_platformUnicode_version_1_1{ 1 };
-constexpr uint16 g_platformUnicode_iso{ 2 }; // deprecated
-constexpr uint16 g_platformUnicode_unicode_2_0_BMP{ 3 };
-constexpr uint16 g_platformUnicode_unicode_2_0{ 4 }; // ignore
-constexpr uint16 g_platformUnicode_unicode{ 5 };     // ignore
-constexpr uint16 g_platformUnicode_last_resort{ 6 }; // ignore
+constexpr std::uint16_t g_platformUnicode_version_1_0{0};
+constexpr std::uint16_t g_platformUnicode_version_1_1{1};
+constexpr std::uint16_t g_platformUnicode_iso{2}; // deprecated
+constexpr std::uint16_t g_platformUnicode_unicode_2_0_BMP{3};
+constexpr std::uint16_t g_platformUnicode_unicode_2_0{4}; // ignore
+constexpr std::uint16_t g_platformUnicode_unicode{5};     // ignore
+constexpr std::uint16_t g_platformUnicode_last_resort{6}; // ignore
 
 /*
  * When the platformID is 1 (Macintosh), the platformSpecificID is a QuickDraw script code.
@@ -63,24 +65,25 @@ constexpr uint16 g_platformUnicode_last_resort{ 6 }; // ignore
  * Subtables with a Macintosh platformID are only required for backwards compatibility with QuickDraw and will be synthesized from Unicode-based subtables if ever needed.
  */
 
+constexpr std::uint16_t g_platformMicrosoft_Symbol{0};
+constexpr std::uint16_t g_platformMicrosoft_Unicode_BMP{1};
+constexpr std::uint16_t g_platformMicrosoft_Shift{2};
+constexpr std::uint16_t g_platformMicrosoft_PRC{3};
+constexpr std::uint16_t g_platformMicrosoft_BigFive{4};
+constexpr std::uint16_t g_platformMicrosoft_Johab{5};
+constexpr std::uint16_t g_platformMicrosoft_Unicode_UCS_4{10};
 
-constexpr uint16 g_platformMicrosoft_Symbol{ 0 };
-constexpr uint16 g_platformMicrosoft_Unicode_BMP{ 1 };
-constexpr uint16 g_platformMicrosoft_Shift{ 2 };
-constexpr uint16 g_platformMicrosoft_PRC{ 3 };
-constexpr uint16 g_platformMicrosoft_BigFive{ 4 };
-constexpr uint16 g_platformMicrosoft_Johab{ 5 };
-constexpr uint16 g_platformMicrosoft_Unicode_UCS_4{ 10 };
-
-inline error_code ReadFormat4Header(FILE *const file, Format4 &format) noexcept
+inline auto ReadFormat4Header(std::FILE* const pFile, Format4& format) noexcept -> error_code
 {
     using enum error_code;
-    if ( ReadValue(file, format.length) != no_error || ReadValue(file, format.language) != no_error || ReadValue(file, format.segCountX2) != no_error )
+    if (ReadValue(pFile, format.length) != no_error || ReadValue(pFile, format.language) != no_error || ReadValue(pFile, format.segCountX2) != no_error)
     {
         return font_parsing_error;
     }
-    const uint16 segCount = format.segCountX2 / 2;
-    if ( fseek(file, 6, SEEK_CUR) != 0 ) // Skip: searchRange, entrySelector, rangeShift
+    const std::uint16_t segCount{static_cast<std::uint16_t>(format.segCountX2 / static_cast<std::uint16_t>(2))};
+    constexpr std::int32_t offset{6};
+    // todo : 1 == SEEK_CUR, make sure it's no longer hard coded
+    if (std::fseek(pFile, offset, 1) != 0) // Skip: searchRange, entrySelector, rangeShift
     {
         return font_parsing_error;
     }
@@ -91,27 +94,28 @@ inline error_code ReadFormat4Header(FILE *const file, Format4 &format) noexcept
     return no_error;
 }
 
-inline error_code ReadFormat4Segments(FILE *const file, Format4 &format) noexcept
+inline auto ReadFormat4Segments(std::FILE* const pFile, Format4& format) noexcept -> error_code
 {
     using enum error_code;
 
-    if ( ReadValue(file, format.endCode) != no_error)
+    if (ReadValue(pFile, format.endCode) != no_error)
     {
         return font_parsing_error;
     }
-    if ( fseek(file, sizeof(format.reservedPad), SEEK_CUR) != 0 )
+    // todo : 1 == SEEK_CUR, make sure it's no longer hard coded
+    if (std::fseek(pFile, sizeof(format.reservedPad), 1) != 0)
     {
         return font_parsing_error;
     }
-    if ( ReadValue(file, format.startCode) != no_error || ReadValue(file, format.idDelta) != no_error )
+    if (ReadValue(pFile, format.startCode) != no_error || ReadValue(pFile, format.idDelta) != no_error)
     {
         return font_parsing_error;
     }
 
-    for ( auto &[readLock, offset] : format.idRangeOffset )
+    for (auto& [readLock, offset] : format.idRangeOffset)
     {
-        readLock = ftell(file);
-        if ( ReadValue(file, offset) != no_error )
+        readLock = static_cast<std::uint32_t>(std::ftell(pFile));
+        if (ReadValue(pFile, offset) != no_error)
         {
             return font_parsing_error;
         }
@@ -119,37 +123,41 @@ inline error_code ReadFormat4Segments(FILE *const file, Format4 &format) noexcep
     return no_error;
 }
 
-inline error_code ReadGlyphIndex(FILE *const file, const uint32 &glyphIndexArrayLocation, int &glyphIndex) noexcept
+inline auto ReadGlyphIndex(std::FILE* const pFile, const std::uint32_t& glyphIndexArrayLocation, int& glyphIndex) noexcept -> error_code
 {
     using enum error_code;
-    if ( fseek(file, glyphIndexArrayLocation, SEEK_SET) != 0 || ReadValue(file, glyphIndex) != no_error )
+    // todo : 0 == SEEK_SET, make sure it's no longer hard coded
+    if (std::fseek(pFile, glyphIndexArrayLocation, 0) != 0 || ReadValue(pFile, glyphIndex) != no_error)
     {
         return font_parsing_error;
     }
     return no_error;
 }
 
-inline error_code ProcessSingleGlyph(FILE *const file, const Format4 &format, const std::size_t i, const uint16 &currCode, int &glyphIndex) noexcept
+inline auto ProcessSingleGlyph(std::FILE* const pFile, const Format4& format, const std::size_t i, const std::uint16_t& currCode, int& glyphIndex) noexcept -> error_code
 {
-    if ( format.idRangeOffset[i].second == 0 )
+    if (format.idRangeOffset[i].second == 0)
     {
         glyphIndex = (currCode + format.idDelta[i]) % 65536;
         return error_code::no_error;
     }
 
-    const uint32 readerLocationOld{ static_cast<uint32>(ftell(file)) };
-    const uint32 rangeOffsetLocation{ format.idRangeOffset[i].first + format.idRangeOffset[i].second };
-    const uint32 glyphIndexArrayLocation{ 2 * (currCode - format.startCode[i]) + rangeOffsetLocation };
+    const std::uint32_t readerLocationOld{static_cast<std::uint32_t>(std::ftell(pFile))};
+    const std::uint32_t rangeOffsetLocation{format.idRangeOffset[i].first + format.idRangeOffset[i].second};
+    const std::uint32_t glyphIndexArrayLocation{(2 * (currCode - format.startCode[i])) + rangeOffsetLocation};
 
-    if ( const error_code result = ReadGlyphIndex(file, glyphIndexArrayLocation, glyphIndex); result != error_code::no_error )
+    if (const error_code result{ReadGlyphIndex(pFile, glyphIndexArrayLocation, glyphIndex)}; result != error_code::no_error)
+    {
         return result;
+    }
 
-    if ( glyphIndex != 0 )
+    if (glyphIndex != 0)
     {
         glyphIndex = (glyphIndex + format.idDelta[i]) % 65536;
     }
 
-    if ( fseek(file, readerLocationOld, SEEK_SET) != 0 )
+    // todo : 0 == SEEK_SET, make sure it's no longer hard coded
+    if (std::fseek(pFile, readerLocationOld, 0) != 0)
     {
         return error_code::font_parsing_error;
     }
@@ -157,22 +165,24 @@ inline error_code ProcessSingleGlyph(FILE *const file, const Format4 &format, co
     return error_code::no_error;
 }
 
-inline error_code ProcessGlyphIndices(FILE *const file, const Format4 &format, std::vector<std::pair<uint32, uint32>> &glyphMap) noexcept
+inline auto ProcessGlyphIndices(std::FILE* const pFile, const Format4& format, std::vector<std::pair<std::uint32_t, std::uint32_t> /*unused*/>& glyphMap) noexcept -> error_code
 {
-    bool hasReadMissingCharGlyph = false;
+    bool hasReadMissingCharGlyph{};
 
-    for ( std::size_t i = 0; i < format.startCode.size(); ++i )
+    for (std::size_t i{}; i < format.startCode.size(); ++i)
     {
-        uint16       currCode = format.startCode[i];
-        const uint16 endCode  = format.endCode[i];
+        std::uint16_t currCode{format.startCode[i]};
+        const std::uint16_t endCode{format.endCode[i]};
 
-        if ( currCode == 65535 )
-            break; // Hack to avoid out of bounds
-
-        while ( currCode <= endCode )
+        if (currCode == 65535)
         {
-            int glyphIndex = 0;
-            if ( ProcessSingleGlyph(file, format, i, currCode, glyphIndex) != error_code::no_error )
+            break; // Hack to avoid out of bounds
+        }
+
+        while (currCode <= endCode)
+        {
+            int glyphIndex{};
+            if (ProcessSingleGlyph(pFile, format, i, currCode, glyphIndex) != error_code::no_error)
             {
                 return error_code::font_parsing_error;
             }
@@ -186,49 +196,48 @@ inline error_code ProcessGlyphIndices(FILE *const file, const Format4 &format, s
     return hasReadMissingCharGlyph ? error_code::invalid_font_format : error_code::no_error;
 }
 
-
-inline auto ParseFormat4(FILE *const file, std::vector<std::pair<uint32, uint32>> &glyphMap) noexcept
+inline auto ParseFormat4(std::FILE* const pFile, std::vector<std::pair<std::uint32_t, std::uint32_t>>& glyphMap) noexcept
 {
     using enum error_code;
-    Format4 format;
-    if ( ReadFormat4Header(file, format) != no_error )
+    Format4 format{};
+    if (ReadFormat4Header(pFile, format) != no_error)
     {
         return font_parsing_error;
     }
 
-    if ( ReadFormat4Segments(file, format) != no_error )
+    if (ReadFormat4Segments(pFile, format) != no_error)
     {
         return font_parsing_error;
     }
 
-    return ProcessGlyphIndices(file, format, glyphMap);
+    return ProcessGlyphIndices(pFile, format, glyphMap);
 }
 
-inline auto ParseFormat12(FILE *const file, std::vector<std::pair<uint32, uint32>> &glyphMap) noexcept
+inline auto ParseFormat12(std::FILE* const pFile, std::vector<std::pair<std::uint32_t, std::uint32_t>>& glyphMap) noexcept
 {
     using enum error_code;
-    Format12 format;
-    if ( ReadValue(file, format.reserved) != no_error || ReadValue(file, format.length) != no_error || ReadValue(file, format.language) != no_error || ReadValue(file, format.nGroups) != no_error )
+    Format12 format{};
+    if (ReadValue(pFile, format.reserved) != no_error || ReadValue(pFile, format.length) != no_error || ReadValue(pFile, format.language) != no_error || ReadValue(pFile, format.numberOfGroups) != no_error)
     {
         return font_parsing_error;
     }
 
     bool hasReadMissingCharGlyph{};
-    for ( int i = 0; i < format.nGroups; i++ )
+    for (std::uint32_t i{}; i < format.numberOfGroups; i++)
     {
-        uint32 startCharCode;
-        uint32 endCharCode;
-        uint32 startGlyphIndex;
-        if ( ReadValue(file, startCharCode) != no_error || ReadValue(file, endCharCode) != no_error || ReadValue(file, startGlyphIndex) != no_error )
+        std::uint32_t startCharCode{};
+        std::uint32_t endCharCode{};
+        std::uint32_t startGlyphIndex{};
+        if (ReadValue(pFile, startCharCode) != no_error || ReadValue(pFile, endCharCode) != no_error || ReadValue(pFile, startGlyphIndex) != no_error)
         {
             return font_parsing_error;
         }
 
-        const uint32 numChars{ endCharCode - startCharCode + 1U };
-        for ( uint32 charCodeOffset{}; charCodeOffset < numChars; ++charCodeOffset )
+        const std::uint32_t numChars{endCharCode - startCharCode + 1U};
+        for (std::uint32_t charCodeOffset{}; charCodeOffset < numChars; ++charCodeOffset)
         {
-            const uint32 charCode{ startCharCode + charCodeOffset };
-            const uint32 glyphIndex{ startGlyphIndex + charCodeOffset };
+            const std::uint32_t charCode{startCharCode + charCodeOffset};
+            const std::uint32_t glyphIndex{startGlyphIndex + charCodeOffset};
 
             glyphMap.emplace_back(glyphIndex, charCode);
             hasReadMissingCharGlyph |= glyphIndex == 0;
@@ -237,67 +246,70 @@ inline auto ParseFormat12(FILE *const file, std::vector<std::pair<uint32, uint32
     return hasReadMissingCharGlyph ? invalid_font_format : no_error;
 }
 
-inline auto ReadCmap(FILE *const file, const uint32 cmapLocation, std::vector<std::pair<uint32, uint32>> &glyphMap) noexcept
+inline auto ReadCmap(std::FILE* const pFile, const std::uint32_t cmapLocation, std::vector<std::pair<std::uint32_t, std::uint32_t> /*unused*/>& glyphMap) noexcept
 {
-    if ( fseek(file, cmapLocation, SEEK_SET) != 0 )
+    // todo : 0 == SEEK_SET, make sure it's no longer hard coded
+    if (std::fseek(pFile, cmapLocation, 0) != 0)
     {
         return error_code::font_parsing_error;
     }
 
     using enum error_code;
     // Read the cmap index.
-    CMapIndex cmapIndex;
-    if ( ReadValue(file, cmapIndex.version) != no_error || ReadValue(file, cmapIndex.numberSubTables) != no_error )
+    CMapIndex cmapIndex{};
+    if (ReadValue(pFile, cmapIndex.version) != no_error || ReadValue(pFile, cmapIndex.numberSubTables) != no_error)
     {
         return font_parsing_error;
     }
 
-    int16  selectedUnicodeVersionID{ -1 };
-    uint32 cmapSubtableOffset{};
-    for ( int i = 0; i < cmapIndex.numberSubTables; ++i )
+    std::uint16_t selectedUnicodeVersionID{static_cast<std::uint16_t>(~0U)};
+    std::uint32_t cmapSubtableOffset{};
+    for (int i{}; i < cmapIndex.numberSubTables; ++i)
     {
-        CMapSubTable subTable;
-        if ( ReadValue(file, subTable.platformId) != no_error || ReadValue(file, subTable.platformSpecificId) != no_error || ReadValue(file, subTable.offset) != no_error )
+        CMapSubTable subTable{};
+        if (ReadValue(pFile, subTable.platformId) != no_error || ReadValue(pFile, subTable.platformSpecificId) != no_error || ReadValue(pFile, subTable.offset) != no_error)
         {
             return font_parsing_error;
         }
 
-        if ( subTable.platformId == g_platformUnicode )
+        if (subTable.platformId == g_platformUnicode)
         {
-            if ( subTable.platformSpecificId == g_platformUnicode_version_1_0 || subTable.platformSpecificId == g_platformUnicode_version_1_1 || subTable.platformSpecificId == g_platformUnicode_unicode_2_0_BMP ||
-                 subTable.platformSpecificId == g_platformUnicode_unicode_2_0 && subTable.platformSpecificId > selectedUnicodeVersionID )
+            if ((subTable.platformSpecificId == g_platformUnicode_version_1_0 || subTable.platformSpecificId == g_platformUnicode_version_1_1 || subTable.platformSpecificId == g_platformUnicode_unicode_2_0_BMP
+                 || subTable.platformSpecificId == g_platformUnicode_unicode_2_0)
+                && subTable.platformSpecificId > selectedUnicodeVersionID)
             {
                 cmapSubtableOffset       = subTable.offset;
                 selectedUnicodeVersionID = subTable.platformSpecificId;
             }
         }
-        else if ( subTable.platformId == g_platformMicrosoft && (subTable.platformSpecificId == g_platformMicrosoft_Unicode_BMP || subTable.platformSpecificId == g_platformMicrosoft_Unicode_UCS_4) )
+        else if (subTable.platformId == g_platformMicrosoft && (subTable.platformSpecificId == g_platformMicrosoft_Unicode_BMP || subTable.platformSpecificId == g_platformMicrosoft_Unicode_UCS_4))
         {
             cmapSubtableOffset = subTable.offset;
         }
     }
 
-    if ( cmapSubtableOffset == 0 )
+    if (cmapSubtableOffset == 0)
     {
         return unsupported_font_type;
     }
-    if ( fseek(file, cmapLocation + cmapSubtableOffset, SEEK_SET) != 0 )
+    // todo : 0 == SEEK_SET, make sure it's no longer hard coded
+    if (std::fseek(pFile, cmapLocation + cmapSubtableOffset, 0) != 0)
     {
         return font_parsing_error;
     }
-    uint16 format;
-    if ( const error_code errorCode = ReadValue(file, format); errorCode != no_error )
+
+    std::uint16_t format{};
+    if (const error_code errorCode{ReadValue(pFile, format)}; errorCode != no_error)
     {
         return errorCode;
     }
 
-    switch ( format )
+    switch (format)
     {
-        case 4:
-            return ParseFormat4(file, glyphMap);
-        case 12:
-            return ParseFormat12(file, glyphMap);
-        default:
-            return unsupported_font_type;
+    case 4: return ParseFormat4(pFile, glyphMap);
+    case 12: return ParseFormat12(pFile, glyphMap);
+    default: return unsupported_font_type;
     }
 }
+
+#endif

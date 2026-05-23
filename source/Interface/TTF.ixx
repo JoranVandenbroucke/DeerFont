@@ -4,13 +4,6 @@
 //
 
 module;
-#include <algorithm>
-#include <bit>
-#include <cstddef>
-#include <cstdio>
-#include <unordered_map>
-#include <vector>
-
 #include "TrueType/TTF.hpp"
 #include "TrueType/TTF_Cmap.hpp"
 #include "TrueType/TTF_Glyf.hpp"
@@ -19,46 +12,47 @@ module;
 #include "TrueType/TTF_Hmtx.hpp"
 #include "TrueType/TTF_Loca.hpp"
 #include "TrueType/TTF_Maxp.hpp"
-export module DeerFont.TrueType;
-import FawnAlgebra.Arithmetics;
-import FawnAlgebra.Bezier;
-import DeerFont.Font;
-using namespace FawnAlgebra;
+export module DeerFont:TrueType;
+import :Font;
+
+import FawnAlgebra;
+import std;
+using namespace fawn_algebra;
 
 namespace DeerFont
 {
-void ApplyLayoutInfo(std::vector<GlyphData> &glyphDatas, const Hmtx &hmtx)
+void g_ApplyLayoutInfo(std::vector<GlyphData>& glyphDatas, const Hmtx& hmtx)
 {
-    for ( auto &[endPtsOfControus, xPositions, yPositions, flags, description, unicodeValue, glyphIndex, advanceWidth, leftSideBearing] : glyphDatas )
+    for (auto& [endPtsOfControus, xPositions, yPositions, flags, description, unicodeValue, glyphIndex, advanceWidth, leftSideBearing] : glyphDatas)
     {
         advanceWidth    = hmtx.hMetrics[glyphIndex].advanceWidth;
         leftSideBearing = hmtx.hMetrics[glyphIndex].leftSideBearing;
     }
 }
-void ConvertDataToFont(const std::vector<GlyphData> &glyphDatas, Font &font)
+void ConvertDataToFont(const std::vector<GlyphData>& glyphDatas, Font& font)
 {
-    for ( const auto &[endPtsOfControus, xPositions, yPositions, flags, description, unicodeValue, glyphIndex, advanceWidth, leftSideBearing] : glyphDatas )
+    for (const auto& [endPtsOfControus, xPositions, yPositions, flags, description, unicodeValue, glyphIndex, advanceWidth, leftSideBearing] : glyphDatas)
     {
-        int16 lastIdx{};
+        std::uint16_t lastIdx{};
         Glyph glyph;
         glyph.curves.emplace_back();
         const std::size_t xPointsSize{xPositions.size()};
-        for ( int i{ 0 }; i < xPointsSize; ++i )
+        for (std::uint32_t idx{0}; idx < xPointsSize; ++idx)
         {
-            if ( i > endPtsOfControus[lastIdx] )
+            if (idx > endPtsOfControus[lastIdx])
             {
                 ++lastIdx;
-                close(glyph.curves.back());
+                Close(glyph.curves.back());
                 glyph.curves.emplace_back();
             }
-            const float2 pos{ static_cast<float>(xPositions[i]) / static_cast<float>(1 << 14), static_cast<float>(yPositions[i]) / static_cast<float>(1 << 14) };
-            if ( isOnCurve(flags[i]) )
+            const float2 pos{static_cast<float>(xPositions[idx]) / static_cast<float>(1 << 14), static_cast<float>(yPositions[idx]) / static_cast<float>(1 << 14)};
+            if (IsOnCurve(flags[idx]))
             {
-                addPoint(glyph.curves.back(), pos);
+                AddPoint(glyph.curves.back(), pos);
             }
             else
             {
-                addControlPoint(glyph.curves.back(), pos);
+                AddControlPoint(glyph.curves.back(), pos);
             }
         }
         glyph.advanceWidth    = advanceWidth;
@@ -66,120 +60,118 @@ void ConvertDataToFont(const std::vector<GlyphData> &glyphDatas, Font &font)
         font.glyphs.insert(std::make_pair(unicodeValue, glyph));
     }
 }
-
-export auto ReadFont(const char8_t *const filePath, Font &font) noexcept
+#ifndef _MSC_VER
+constexpr auto FopenS(std::FILE** ppFile, const char* pName, const char* pMode) -> int
 {
-    FILE *file;
-    fopen_s(&file, std::bit_cast<const char *const>(filePath), "rb");
-    if ( !file )
+    *ppFile = std::fopen(pName, pMode);
+    return *ppFile ? 0 : -1;
+}
+#else
+constexpr auto FopenS(std::FILE** ppFile, const char* pName, const char* pMode) -> int
+{
+    ppFile = std::fopen_s(pName, pMode);
+    return ppFile ? 0 : -1;
+}
+#endif
+
+export auto ReadFont(const char8_t* const pFilePath, Font& font) noexcept
+{
+    std::FILE* pFile;
+    FopenS(&pFile, std::bit_cast<const char* const>(pFilePath), "rb");
+    if (!pFile)
     {
-        // can't open file
+        // can't open pFile
         return -1;
     }
 
     OffsetSubTable subTable;
-    if ( ReadOffsetSubTable(file, subTable) != error_code::no_error )
+    if (ReadOffsetSubTable(pFile, subTable) != error_code::no_error)
     {
         // reading problem/incorrect format
         return -1;
     }
 
     std::vector<TableDirectory> tableDirectories{};
-    if ( ReadTableDirectory(file, subTable, tableDirectories) != error_code::no_error )
+    if (ReadTableDirectory(pFile, subTable, tableDirectories) != error_code::no_error)
     {
         // reading problem/incorrect format
         return -1;
     }
 
-    uint32 cmapLocation{};
-    uint32 glypLocation{};
-    uint32 headLocation{};
-    uint32 hheaLocation{};
-    uint32 hmtxLocation{};
-    uint32 locaLocation{};
-    uint32 maxpLocation{};
-    for ( const auto &[tag, checksum, offset, length] : tableDirectories )
+    std::uint32_t cmapLocation{};
+    std::uint32_t glypLocation{};
+    std::uint32_t headLocation{};
+    std::uint32_t hheaLocation{};
+    std::uint32_t hmtxLocation{};
+    std::uint32_t locaLocation{};
+    std::uint32_t maxpLocation{};
+    for (const auto& [tag, checksum, offset, length] : tableDirectories)
     {
-        switch ( tag )
+        switch (tag)
         {
-            case g_cmapId:
-                cmapLocation = offset;
-                break;
-            case g_glyfId:
-                glypLocation = offset;
-                break;
-            case g_headId:
-                headLocation = offset;
-                break;
-            case g_hheaId:
-                hheaLocation = offset;
-                break;
-            case g_hmtxId:
-                hmtxLocation = offset;
-                break;
-            case g_locaId:
-                locaLocation = offset;
-                break;
-            case g_maxpId:
-                maxpLocation = offset;
-                break;
-            default:
-                continue;
+        case g_cmapId: cmapLocation = offset; break;
+        case g_glyfId: glypLocation = offset; break;
+        case g_headId: headLocation = offset; break;
+        case g_hheaId: hheaLocation = offset; break;
+        case g_hmtxId: hmtxLocation = offset; break;
+        case g_locaId: locaLocation = offset; break;
+        case g_maxpId: maxpLocation = offset; break;
+        default: continue;
         }
-        if ( cmapLocation != 0 && glypLocation != 0 && headLocation != 0 && hheaLocation != 0 && hmtxLocation != 0 && locaLocation != 0 && maxpLocation != 0 )
+        if (cmapLocation != 0 && glypLocation != 0 && headLocation != 0 && hheaLocation != 0 && hmtxLocation != 0 && locaLocation != 0 && maxpLocation != 0)
         {
             break;
         }
     }
 
     // not supported font
-    if ( cmapLocation == 0 || glypLocation == 0 || headLocation == 0 || hheaLocation == 0 || hmtxLocation == 0 || locaLocation == 0 || maxpLocation == 0 )
+    if (cmapLocation == 0 || glypLocation == 0 || headLocation == 0 || hheaLocation == 0 || hmtxLocation == 0 || locaLocation == 0 || maxpLocation == 0)
     {
         return -1;
     }
 
     Head head;
-    if ( ReadHeader(file, headLocation, head) != error_code::no_error )
+    if (ReadHeader(pFile, headLocation, head) != error_code::no_error)
     {
         return -1;
     }
 
     Maxp maxp;
-    if ( ReadMaxp(file, maxpLocation, maxp) != error_code::no_error )
+    if (ReadMaxp(pFile, maxpLocation, maxp) != error_code::no_error)
     {
         return -1;
     }
 
-    std::vector<uint32> glyphLocations;
-    if ( ReadLoca(file, locaLocation, maxp.numGlyphs, glypLocation, head.indexToLocFormat == 0, glyphLocations) != error_code::no_error )
+    std::vector<std::uint32_t> glyphLocations;
+    if (ReadLoca(pFile, locaLocation, maxp.numGlyphs, glypLocation, head.indexToLocFormat == 0, glyphLocations) != error_code::no_error)
     {
         return -1;
     }
 
-    std::vector<std::pair<uint32, uint32>> glyphMapping;
-    if ( ReadCmap(file, cmapLocation, glyphMapping) != error_code::no_error )
+    std::vector<std::pair<std::uint32_t, std::uint32_t>> glyphMapping;
+    if (ReadCmap(pFile, cmapLocation, glyphMapping) != error_code::no_error)
     {
         return -1;
     }
 
     std::vector<GlyphData> glyphDatas;
-    if ( ReadAllGlyphs(file, glyphLocations, glyphMapping, glyphDatas) != error_code::no_error )
+    if (ReadAllGlyphs(pFile, glyphLocations, glyphMapping, glyphDatas) != error_code::no_error)
     {
         return -1;
     }
 
-    uint16 numOfLongHorMetrics;
-    if ( GetNumAdvanceWidthMetrics(file, hheaLocation, numOfLongHorMetrics) != error_code::no_error )
+    std::uint16_t numOfLongHorMetrics;
+    if (GetNumAdvanceWidthMetrics(pFile, hheaLocation, numOfLongHorMetrics) != error_code::no_error)
     {
         return -1;
     }
 
     Hmtx hmtx;
-    if ( GetHorizontalLayoutInformation(file, hmtxLocation, numOfLongHorMetrics, static_cast<uint32>(glyphLocations.size()), hmtx) != error_code::no_error )
+    if (GetHorizontalLayoutInformation(pFile, hmtxLocation, numOfLongHorMetrics, static_cast<std::uint16_t>(glyphLocations.size()), hmtx) != error_code::no_error)
     {
         return -1;
     }
-    ApplyLayoutInfo(glyphDatas, hmtx);
+    g_ApplyLayoutInfo(glyphDatas, hmtx);
     ConvertDataToFont(glyphDatas, font);
     return 0;
 }
@@ -187,39 +179,45 @@ export auto ReadFont(const char8_t *const filePath, Font &font) noexcept
 // todo: use a different meshing algorithm and profile them eg. Hertel-Mehlhorn, Delaunay triangulation, or
 // todo: check if casing is better than leading when sting changes, find ballence between cpu speeds and ram usage
 export template <typename T, std::size_t N>
-auto FontToMesh(const Font &font, const std::string_view unicodeStr, FontMesh &fontMesh)
+auto FontToMesh(const Font& font, const std::string_view unicodeStr, FontMesh& fontMesh)
 {
-    std::vector<uint32> usedChars;
-    std::size_t         i = 0;
-    while ( i < unicodeStr.size() )
+    std::vector<std::uint32_t> usedChars;
+    std::size_t idx = 0;
+    while (idx < unicodeStr.size())
     {
-        uint32_t codePoint{ 0 };
+        std::uint32_t codePoint{0};
 
-        if ( const unsigned char c{ static_cast<unsigned char>(unicodeStr[i]) }; c <= 0x7F )
+        if (const std::uint8_t c = static_cast<std::uint8_t>(unicodeStr[idx]); c <= std::uint8_t{0x7F})
         { // 1-byte ASCII
-            codePoint = c;
-            i += 1;
+            codePoint  = static_cast<std::uint32_t>(c);
+            idx       += std::size_t{1};
         }
-        else if ( (c & 0xE0) == 0xC0 )
+        else if ((c & std::uint8_t{0xE0}) == std::uint8_t{0xC0})
         { // 2-byte code point
-            codePoint = ((c & 0x1F) << 6) | (unicodeStr[i + 1] & 0x3F);
-            i += 2;
+            const std::uint32_t b1  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}]));
+            codePoint               = (static_cast<std::uint32_t>(c & std::uint8_t{0x1F}) << 6U) | (b1 & 0x3FU);
+            idx                    += std::size_t{2};
         }
-        else if ( (c & 0xF0) == 0xE0 )
+        else if ((c & std::uint8_t{0xF0}) == std::uint8_t{0xE0})
         { // 3-byte code point
-            codePoint = ((c & 0x0F) << 12) | ((unicodeStr[i + 1] & 0x3F) << 6) | (unicodeStr[i + 2] & 0x3F);
-            i += 3;
+            const std::uint32_t b1  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}]));
+            const std::uint32_t b2  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{2}]));
+            codePoint               = (static_cast<std::uint32_t>(c & std::uint8_t{0x0F}) << 12U) | ((b1 & 0x3FU) << 6U) | (b2 & 0x3FU);
+            idx                    += std::size_t{3};
         }
-        else if ( (c & 0xF8) == 0xF0 )
+        else if ((c & std::uint8_t{0xF8}) == std::uint8_t{0xF0})
         { // 4-byte code point
-            codePoint = ((c & 0x07) << 18) | ((unicodeStr[i + 1] & 0x3F) << 12) | ((unicodeStr[i + 2] & 0x3F) << 6) | (unicodeStr[i + 3] & 0x3F);
-            i += 4;
+            const std::uint32_t b1  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}]));
+            const std::uint32_t b2  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{2}]));
+            const std::uint32_t b3  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{3}]));
+            codePoint               = (static_cast<std::uint32_t>(c & std::uint8_t{0x07}) << 18U) | ((b1 & 0x3FU) << 12U) | ((b2 & 0x3FU) << 6U) | (b3 & 0x3FU);
+            idx                    += std::size_t{4};
         }
         else
         {
             break;
         }
-        if ( std::ranges::find(usedChars, codePoint) != usedChars.cend() || !font.glyphs.contains(codePoint) )
+        if (std::ranges::find(usedChars, codePoint) != usedChars.cend() || !font.glyphs.contains(codePoint))
         {
             continue;
         }
@@ -228,31 +226,31 @@ auto FontToMesh(const Font &font, const std::string_view unicodeStr, FontMesh &f
         // Get the glyph
         std::vector<Vec<T, N>> glyphOddVertices;
         std::vector<Vec<T, N>> glyphArcVertices;
-        std::vector<int>       glyphOddIndices;
-        std::vector<int>       glyphArcIndices;
-        for ( const Glyph &glyph{ font.glyphs.at(codePoint) }; const auto &bezier : glyph.curves )
+        std::vector<int> glyphOddIndices;
+        std::vector<int> glyphArcIndices;
+        for (const Glyph& glyph{font.glyphs.at(codePoint)}; const auto& bezier : glyph.curves)
         {
-            for ( std::size_t j{}; j < bezier.points.size(); j += 2 )
+            for (std::size_t bezierPointId{}; bezierPointId < bezier.size(); bezierPointId += 2)
             {
-                glyphOddVertices.push_back(bezier.points[j]);
-                glyphArcVertices.push_back(bezier.points[j]);
-                glyphArcVertices.push_back(bezier.points[(j + 1) % bezier.points.size()]);
+                glyphOddVertices.push_back(bezier[bezierPointId]);
+                glyphArcVertices.push_back(bezier[bezierPointId]);
+                glyphArcVertices.push_back(bezier[(bezierPointId + 1) % bezier.size()]);
             }
         }
         EarClipping(glyphOddVertices, glyphOddIndices);
 
-        for ( std::size_t j{}; j < glyphArcVertices.size(); j += 2 )
+        for (std::size_t bezierPointId{}; bezierPointId < glyphArcVertices.size(); bezierPointId += 2)
         {
-            glyphArcIndices.push_back(j);
-            glyphArcIndices.push_back((j + 1) % glyphArcVertices.size());
-            glyphArcIndices.push_back((j + 2) % glyphArcVertices.size());
+            glyphArcIndices.push_back(static_cast<int>(bezierPointId));
+            glyphArcIndices.push_back(static_cast<int>((bezierPointId + 1) % glyphArcVertices.size()));
+            glyphArcIndices.push_back(static_cast<int>((bezierPointId + 2) % glyphArcVertices.size()));
         }
-        auto &[vertices, indices, fillSize]{ fontMesh.glyphs[codePoint] };
+        auto& [vertices, indices, fillSize]{fontMesh.glyphs[codePoint]};
         vertices.insert(vertices.end(), glyphOddVertices.cbegin(), glyphOddVertices.cend());
         vertices.insert(vertices.end(), glyphArcVertices.cbegin(), glyphArcVertices.cend());
         indices.insert(indices.end(), glyphOddIndices.cbegin(), glyphOddIndices.cend());
         indices.insert(indices.end(), glyphArcIndices.cbegin(), glyphArcIndices.cend());
-        fillSize = glyphOddIndices.size();
+        fillSize = static_cast<std::uint32_t>(glyphOddIndices.size());
     }
 }
 } // namespace DeerFont

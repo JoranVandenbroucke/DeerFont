@@ -6,5 +6,5 @@
 module;
 
 export module DeerFont;
-export import DeerFont.Font;
-export import DeerFont.TrueType;
+export import :Font;
+export import :TrueType;
