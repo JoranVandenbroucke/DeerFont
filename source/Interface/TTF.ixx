@@ -194,24 +194,24 @@ auto FontToMesh(const Font& font, const std::string_view unicodeStr, FontMesh& f
         }
         else if ((c & std::uint8_t{0xE0}) == std::uint8_t{0xC0})
         { // 2-byte code point
-            const std::uint32_t b1  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}]));
-            codePoint               = (static_cast<std::uint32_t>(c & std::uint8_t{0x1F}) << 6U) | (b1 & 0x3FU);
-            idx                    += std::size_t{2};
+            const std::uint32_t b1{static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}])};
+            codePoint  = (static_cast<std::uint32_t>(c & std::uint8_t{0x1F}) << 6U) | (b1 & 0x3FU);
+            idx       += std::size_t{2};
         }
         else if ((c & std::uint8_t{0xF0}) == std::uint8_t{0xE0})
         { // 3-byte code point
-            const std::uint32_t b1  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}]));
-            const std::uint32_t b2  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{2}]));
-            codePoint               = (static_cast<std::uint32_t>(c & std::uint8_t{0x0F}) << 12U) | ((b1 & 0x3FU) << 6U) | (b2 & 0x3FU);
-            idx                    += std::size_t{3};
+            const std::uint32_t b1{static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}])};
+            const std::uint32_t b2{static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{2}])};
+            codePoint  = (static_cast<std::uint32_t>(c & std::uint8_t{0x0F}) << 12U) | ((b1 & 0x3FU) << 6U) | (b2 & 0x3FU);
+            idx       += std::size_t{3};
         }
         else if ((c & std::uint8_t{0xF8}) == std::uint8_t{0xF0})
         { // 4-byte code point
-            const std::uint32_t b1  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}]));
-            const std::uint32_t b2  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{2}]));
-            const std::uint32_t b3  = static_cast<std::uint32_t>(static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{3}]));
-            codePoint               = (static_cast<std::uint32_t>(c & std::uint8_t{0x07}) << 18U) | ((b1 & 0x3FU) << 12U) | ((b2 & 0x3FU) << 6U) | (b3 & 0x3FU);
-            idx                    += std::size_t{4};
+            const std::uint32_t b1{static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{1}])};
+            const std::uint32_t b2{static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{2}])};
+            const std::uint32_t b3{static_cast<std::uint8_t>(unicodeStr[idx + std::size_t{3}])};
+            codePoint  = (static_cast<std::uint32_t>(c & std::uint8_t{0x07}) << 18U) | ((b1 & 0x3FU) << 12U) | ((b2 & 0x3FU) << 6U) | (b3 & 0x3FU);
+            idx       += std::size_t{4};
         }
         else
         {

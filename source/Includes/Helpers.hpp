@@ -20,14 +20,14 @@ using longDateTime = std::int64_t;
 
 enum class error_code : std::uint8_t
 {
-    no_error = 0,
-    font_not_found,
-    invalid_font_format,
-    corrupted_font_file,
-    unsupported_font_type,
-    permission_denied,
-    memory_allocation_failed,
-    font_parsing_error
+    no_error                 = 0,
+    font_not_found           = 1,
+    invalid_font_format      = 2,
+    corrupted_font_file      = 3,
+    unsupported_font_type    = 4,
+    permission_denied        = 5,
+    memory_allocation_failed = 6,
+    font_parsing_error       = 7,
 };
 
 template <typename T, typename V>

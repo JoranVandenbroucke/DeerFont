@@ -81,9 +81,8 @@ inline auto ReadFormat4Header(std::FILE* const pFile, Format4& format) noexcept 
         return font_parsing_error;
     }
     const std::uint16_t segCount{static_cast<std::uint16_t>(format.segCountX2 / static_cast<std::uint16_t>(2))};
-    constexpr std::int32_t offset{6};
     // todo : 1 == SEEK_CUR, make sure it's no longer hard coded
-    if (std::fseek(pFile, offset, 1) != 0) // Skip: searchRange, entrySelector, rangeShift
+    if (constexpr std::int32_t offset{6}; std::fseek(pFile, offset, 1) != 0) // Skip: searchRange, entrySelector, rangeShift
     {
         return font_parsing_error;
     }
@@ -144,7 +143,7 @@ inline auto ProcessSingleGlyph(std::FILE* const pFile, const Format4& format, co
 
     const std::uint32_t readerLocationOld{static_cast<std::uint32_t>(std::ftell(pFile))};
     const std::uint32_t rangeOffsetLocation{format.idRangeOffset[i].first + format.idRangeOffset[i].second};
-    const std::uint32_t glyphIndexArrayLocation{(2 * (currCode - format.startCode[i])) + rangeOffsetLocation};
+    const std::uint32_t glyphIndexArrayLocation{2 * (currCode - format.startCode[i]) + rangeOffsetLocation};
 
     if (const error_code result{ReadGlyphIndex(pFile, glyphIndexArrayLocation, glyphIndex)}; result != error_code::no_error)
     {
@@ -153,7 +152,8 @@ inline auto ProcessSingleGlyph(std::FILE* const pFile, const Format4& format, co
 
     if (glyphIndex != 0)
     {
-        glyphIndex = (glyphIndex + format.idDelta[i]) % 65536;
+        constexpr std::uint32_t mask{std::numeric_limits<std::uint16_t>::max()};
+        glyphIndex = (glyphIndex + format.idDelta[i]) & mask;
     }
 
     // todo : 0 == SEEK_SET, make sure it's no longer hard coded
@@ -188,7 +188,7 @@ inline auto ProcessGlyphIndices(std::FILE* const pFile, const Format4& format, s
             }
 
             glyphMap.emplace_back(glyphIndex, currCode);
-            hasReadMissingCharGlyph |= (glyphIndex == 0);
+            hasReadMissingCharGlyph |= glyphIndex == 0;
             ++currCode;
         }
     }
