@@ -1,21 +1,21 @@
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 add_executable(${PROJECT_NAME}_test
         ttf.cpp
 )
 
-include(${CMAKE_SOURCE_DIR}/CMake/SetupCatch.cmake)
-setup_catch(${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME}_test PROPERTIES CXX_STANDARD_REQUIRED ON)
+set_target_properties(${PROJECT_NAME}_test PROPERTIES CXX_EXTENSIONS OFF)
 
-target_compile_options(${PROJECT_NAME}_test PRIVATE
-        $<$<CXX_COMPILER_ID:MSVC>: /W4 /WX /MP $<$<CONFIG:Debug>:${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT} ${DEFAULT_CXX_EXCEPTION_HANDLING}>>
-        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
-        PUBLIC
-        $<$<CXX_COMPILER_ID:GNU>:-fmodules-ts>
-        #todo --embed-dir=${CMAKE_SOURCE_DIR}/Embedded/
-        $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++ -fembed-bitcode -Wno-deprecated -Wno-deprecated-declarations>
-)
+target_compile_definitions(${PROJECT_NAME}_test PRIVATE $<$<CONFIG:Debug>:-DBALBINO_DEBUG>)
+target_compile_features(${PROJECT_NAME}_test PRIVATE cxx_std_23)
+
+include(compiler_select_flags)
+include(compiler_select_sdl)
+include(compiler_select_linker)
+include(setup_catch)
+set_compile_flags(${PROJECT_NAME})
+select_best_stl(${PROJECT_NAME}_test)
+select_best_linker(${PROJECT_NAME}_test)
+setup_catch(${PROJECT_NAME}_test)
 
 target_link_libraries(${PROJECT_NAME}_test PRIVATE
         ${PROJECT_NAME}::${PROJECT_NAME}
