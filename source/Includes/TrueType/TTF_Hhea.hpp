@@ -1,6 +1,3 @@
-#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_HHEA_HPP
-#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_HHEA_HPP
-
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -50,5 +47,3 @@ inline auto GetNumAdvanceWidthMetrics(std::FILE* pFile, const std::uint32_t hhea
     numOfLongHorMetrics = hhea.numOfLongHorMetrics;
     return error_code::no_error;
 }
-
-#endif

@@ -1,6 +1,3 @@
-#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_HELPERS_HPP
-#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_HELPERS_HPP
-
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -67,5 +64,3 @@ auto ReadValue(std::FILE* const file, std::vector<T>& values)
     }
     return error_code::no_error;
 }
-
-#endif

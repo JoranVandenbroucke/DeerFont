@@ -1,6 +1,3 @@
-#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_LOCA_HPP
-#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_LOCA_HPP
-
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -45,5 +42,3 @@ inline auto ReadLoca(std::FILE* const pFile, const std::uint32_t locaLocation, c
     }
     return error_code::no_error;
 }
-
-#endif

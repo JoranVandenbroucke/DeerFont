@@ -1,6 +1,3 @@
-#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_HPP
-#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_HPP
-
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -82,5 +79,3 @@ inline auto ReadTableDirectory(std::FILE* const pFile, const OffsetSubTable& off
     }
     return error_code::no_error;
 }
-
-#endif

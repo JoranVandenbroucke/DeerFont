@@ -9,7 +9,7 @@
 import DeerFont;
 using namespace DeerFont;
 
-g_TEST_CASE("ReadFont: Valid font file", "[TrueType]")
+TEST_CASE("ReadFont: Valid font file", "[TrueType]")
 {
     Font font;
     const char8_t* filePath{u8"fonts/JetBrainsMono-Bold.ttf"};
@@ -19,7 +19,7 @@ g_TEST_CASE("ReadFont: Valid font file", "[TrueType]")
     REQUIRE_FALSE(font.glyphs.empty());
 }
 
-g_TEST_CASE("ReadFont: Invalid font file", "[TrueType]")
+TEST_CASE("ReadFont: Invalid font file", "[TrueType]")
 {
     Font font;
     const char8_t* filePath{u8"fonts/InvalidFont.ttf"};
@@ -28,7 +28,7 @@ g_TEST_CASE("ReadFont: Invalid font file", "[TrueType]")
     REQUIRE(result == -1);
 }
 
-g_TEST_CASE("ReadFont: Font with no glyphs", "[TrueType]")
+TEST_CASE("ReadFont: Font with no glyphs", "[TrueType]")
 {
     Font font;
     // todo : add empty font

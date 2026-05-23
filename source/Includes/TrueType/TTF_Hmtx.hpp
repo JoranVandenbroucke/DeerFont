@@ -1,6 +1,3 @@
-#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_HMTX_HPP
-#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_HMTX_HPP
-
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -55,5 +52,3 @@ inline auto GetHorizontalLayoutInformation(std::FILE* const pFile, const std::ui
 
     return error_code::no_error;
 }
-
-#endif

@@ -1,6 +1,3 @@
-#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_GLYF_HPP
-#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_GLYF_HPP
-
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -413,5 +410,3 @@ inline auto ReadAllGlyphs(std::FILE* const pFile, const std::vector<std::uint32_
     }
     return error_code::no_error;
 }
-
-#endif

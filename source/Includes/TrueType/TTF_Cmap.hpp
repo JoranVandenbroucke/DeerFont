@@ -1,6 +1,3 @@
-#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_CMAP_HPP
-#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_CMAP_HPP
-
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -311,5 +308,3 @@ inline auto ReadCmap(std::FILE* const pFile, const std::uint32_t cmapLocation, s
     default: return unsupported_font_type;
     }
 }
-
-#endif

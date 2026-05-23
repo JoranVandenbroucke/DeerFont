@@ -1,6 +1,3 @@
-#ifndef HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_MAXP_HPP
-#define HOME_JORAN_DEV_BALBINO_SOURCE_ENGINE_RENDERER_FONT_SOURCE_INCLUDES_TRUETYPE_TTF_MAXP_HPP
-
 //
 // Copyright (c) 2024.
 // Author: Joran.
@@ -32,5 +29,3 @@ inline auto ReadMaxp(std::FILE* const pFile, const std::uint32_t mapxLocation, M
     }
     return error_code::no_error;
 }
-
-#endif
