@@ -1,18 +1,18 @@
-cmake_minimum_required(VERSION 4.3.0)
-set(CMAKE_CXX_COMPILER_IMPORT_STD ON)
-set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "451f2fe2-a8a2-47c3-bc32-94786d8fc91b")
-project(DeerFont VERSION 0.1.0 LANGUAGES CXX)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_MODULE_STD 1)
+set (CURRENT_PROJECT_NAME "DeerFont")
+if (NOT DEFINED PROJECT_NAME)   # standalone build
+    cmake_minimum_required(VERSION 4.3)
+    set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "451f2fe2-a8a2-47c3-bc32-94786d8fc91b")
+    set(CMAKE_CXX_MODULE_STD 1)
+    project(${CURRENT_PROJECT_NAME} VERSION 0.1.0 LANGUAGES CXX)
+endif()
 
 option(DEERFONT_TEST "Enables The Tests For The Font Library" OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-add_library(${PROJECT_NAME})
-add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+add_library(${CURRENT_PROJECT_NAME})
+add_library(${CURRENT_PROJECT_NAME}::${CURRENT_PROJECT_NAME} ALIAS ${CURRENT_PROJECT_NAME})
 
-target_sources(${PROJECT_NAME}
+target_sources(${CURRENT_PROJECT_NAME}
         PUBLIC
         FILE_SET deerfont_module TYPE CXX_MODULES
         BASE_DIRS
@@ -37,11 +37,11 @@ target_sources(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/Includes/TrueType/TTF_Maxp.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/Includes/Helpers.hpp
 )
-target_include_directories(${PROJECT_NAME} PRIVATE source/Includes)
+target_include_directories(${CURRENT_PROJECT_NAME} PRIVATE source/Includes)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-DBALBINO_DEBUG>)
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
-set_target_properties(${PROJECT_NAME} PROPERTIES
+target_compile_definitions(${CURRENT_PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-DBALBINO_DEBUG>)
+target_compile_features(${CURRENT_PROJECT_NAME} PRIVATE cxx_std_23)
+set_target_properties(${CURRENT_PROJECT_NAME} PROPERTIES
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS        OFF
     CXX_SCAN_FOR_MODULES  ON
@@ -51,10 +51,10 @@ include(compiler_select_flags)
 include(compiler_select_sdl)
 include(compiler_select_linker)
 include(setup_fawnalgebra)
-set_compile_flags(${PROJECT_NAME})
-select_best_stl(${PROJECT_NAME})
-select_best_linker(${PROJECT_NAME})
-setup_fawnalgebra(${PROJECT_NAME})
+set_compile_flags(${CURRENT_PROJECT_NAME})
+select_best_stl(${CURRENT_PROJECT_NAME})
+select_best_linker(${CURRENT_PROJECT_NAME})
+setup_fawnalgebra(${CURRENT_PROJECT_NAME})
 
 if (DEERFONT_TEST)
     add_subdirectory(tests)

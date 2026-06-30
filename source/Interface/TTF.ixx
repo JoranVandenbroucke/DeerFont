@@ -60,19 +60,12 @@ void ConvertDataToFont(const std::vector<GlyphData>& glyphDatas, Font& font)
         font.glyphs.insert(std::make_pair(unicodeValue, glyph));
     }
 }
-#ifndef _MSC_VER
+
 constexpr auto FopenS(std::FILE** ppFile, const char* pName, const char* pMode) -> int
 {
     *ppFile = std::fopen(pName, pMode);
     return *ppFile ? 0 : -1;
 }
-#else
-constexpr auto FopenS(std::FILE** ppFile, const char* pName, const char* pMode) -> int
-{
-    ppFile = std::fopen_s(pName, pMode);
-    return ppFile ? 0 : -1;
-}
-#endif
 
 export auto ReadFont(const char8_t* const pFilePath, Font& font) noexcept
 {
